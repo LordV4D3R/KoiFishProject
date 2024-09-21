@@ -1,0 +1,52 @@
+[
+  {
+    "id": "483a2c44-d480-4275-bc8b-230f0fd01845",
+    "measureData": [],
+    "unitName": "CO2",
+    "unitFullName": "Carbon dioxide",
+    "unitValue": "12.2",
+    "info": "Pond 1",
+    "minValue": "10",
+    "maxValue": "20"
+  },
+  {
+    "id": "aef1e900-67fc-449f-9e42-03003f5af96e",
+    "measureData": [],
+    "unitName": "CO3",
+    "unitFullName": "Carbonate",
+    "unitValue": "12.2",
+    "info": "Pond 1",
+    "minValue": "10",
+    "maxValue": "20"
+  },
+  {
+    "id": "42ec5aba-54e3-4bbc-931a-a74e2cb5c5cd",
+    "measureData": [],
+    "unitName": "O2",
+    "unitFullName": "Oxygen",
+    "unitValue": "12.2",
+    "info": "Pond 1",
+    "minValue": "10",
+    "maxValue": "20"
+  },
+  {
+    "id": "c4164843-2e36-4cf0-ba62-9a83ed4e6e6a",
+    "measureData": [],
+    "unitName": "O2",
+    "unitFullName": "Oxygen",
+    "unitValue": "12.2",
+    "info": "Pond 2",
+    "minValue": "10",
+    "maxValue": "20"
+  },
+  {
+    "id": "e763ea71-e819-4493-8c3f-90fb36962022",
+    "measureData": [],
+    "unitName": "O2",
+    "unitFullName": "Oxygen",
+    "unitValue": "12.2",
+    "info": "Pond 2",
+    "minValue": "10",
+    "maxValue": "20"
+  }
+]

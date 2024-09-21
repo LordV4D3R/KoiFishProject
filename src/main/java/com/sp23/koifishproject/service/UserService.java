@@ -1,9 +1,10 @@
 package com.sp23.koifishproject.service;
 
 import com.sp23.koifishproject.model.User;
-import com.sp23.koifishproject.repository.UserRepository;
+import com.sp23.koifishproject.repository.mongo.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class UserService {
 
     @Autowired
+    @Qualifier("mongoUserRepository")
     private UserRepository userRepository;
 
     //Get all users

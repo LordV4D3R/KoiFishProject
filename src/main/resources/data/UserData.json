@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1e7b1d5e-8b8b-4b5e-9b5e-1e7b1d5e8b8b",
+    "ponds": [],
+    "password": "12345",
+    "email": "member1@example.com",
+    "fullName": "Member One",
+    "status": "ACTIVE",
+    "phoneNumber": "123-456-7890",
+    "role": "MEMBER"
+  },
+  {
+    "id": "2e7b1d5e-8b8b-4b5e-9b5e-2e7b1d5e8b8b",
+    "ponds": [],
+    "password": "12345",
+    "email": "admin1@example.com",
+    "fullName": "Admin One",
+    "status": "INACTIVE",
+    "phoneNumber": "098-765-4321",
+    "role": "ADMIN"
+  }
+]

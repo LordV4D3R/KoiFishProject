@@ -1,0 +1,34 @@
+[
+  [
+    {
+      "id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+      "measurementId": "7f596851-4121-4c7f-91b3-00733a186305",
+      "unitId": "483a2c44-d480-4275-bc8b-230f0fd01845",
+      "volume": 7.5
+    },
+    {
+      "id": "aef1e900-67fc-449f-9e42-03003f5af96e",
+      "measurementId": "7f596851-4121-4c7f-91b3-00733a186305",
+      "unitId": "aef1e900-67fc-449f-9e42-03003f5af96e",
+      "volume": 7.5
+    },
+    {
+      "id": "2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+      "measurementId": "7f596851-4121-4c7f-91b3-00733a186305",
+      "unitId": "42ec5aba-54e3-4bbc-931a-a74e2cb5c5cd",
+      "volume": 22.0
+    },
+    {
+      "id": "3acf16ef-9ff0-4090-b794-246de4d4ab7a",
+      "measurementId": "86b71b56-f5cc-4b2b-ad23-abf62d3cbc19",
+      "unitId": "c4164843-2e36-4cf0-ba62-9a83ed4e6e6a",
+      "volume": 22.0
+    },
+    {
+      "id": "f1f87f86-b0f0-44a9-9714-5280ae5dbfbf",
+      "measurementId": "86b71b56-f5cc-4b2b-ad23-abf62d3cbc19",
+      "unitId": "e763ea71-e819-4493-8c3f-90fb36962022",
+      "volume": 22.0
+    }
+  ]
+]

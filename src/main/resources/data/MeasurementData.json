@@ -1,0 +1,37 @@
+[
+  {
+    "id": "7f596851-4121-4c7f-91b3-00733a186305",
+    "pondId": "3e7b1d5e-8b8b-4b5e-9b5e-3e7b1d5e8b8b",
+    "measureData": [],
+    "date": "2023-10-01T10:00:00",
+    "note": "Pond 1"
+  },
+  {
+    "id": "474d0db3-6102-4319-b63e-08a40330b0a9",
+    "pondId": "3e7b1d5e-8b8b-4b5e-9b5e-3e7b1d5e8b8b",
+    "measureData": [],
+    "date": "2023-10-01T10:20:00",
+    "note": "Pond 1"
+  },
+  {
+    "id": "15023242-4c0b-416f-a2ac-0e8581851353",
+    "pondId": "3e7b1d5e-8b8b-4b5e-9b5e-3e7b1d5e8b8b",
+    "measureData": [],
+    "date": "2023-10-01T15:00:00",
+    "note": "Pond 1"
+  },
+  {
+    "id": "86b71b56-f5cc-4b2b-ad23-abf62d3cbc19",
+    "pondId": "4e7b1d5e-8b8b-4b5e-9b5e-4e7b1d5e8b8b",
+    "measureData": [],
+    "date": "2023-10-01T10:00:00",
+    "note": "Pond 2"
+  },
+  {
+    "id": "2ef4c25c-3d43-4c9a-ba65-ce9dd594bdff",
+    "pondId": "4e7b1d5e-8b8b-4b5e-9b5e-4e7b1d5e8b8b",
+    "measureData": [],
+    "date": "2023-10-01T11:00:00",
+    "note": "Pond 2"
+  }
+]
