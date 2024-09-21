@@ -4,49 +4,46 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "kois")
+@Document(collection = "kois")
 public class Koi {
     @Id
-    @GeneratedValue
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "pond_id")
-    private Pond pond;
+    //ManyToOne
+    private UUID pondId;
 
-    @OneToMany(mappedBy = "koi")
+    //OneToMany
     private List<KoiRecord> koiRecords;
 
-    @OneToMany(mappedBy = "koi")
+    //OneToMany
     private List<FeedingSchedule> feedingSchedules;
-
 
     private String name;
     private int age;
-    private sex sex;
+    private Sex sex;
     private String category;
     private LocalDate inPondSince;
     private double purchasePrice;
-    private status status;
+    private Status status;
     private String imgUrl;
     private String origin;
     private String breed;
 
-    public enum status {
+    public enum Status {
         ACTIVE,
         DECEASED,
     }
 
-    public enum sex {
+    public enum Sex {
         FEMALE,
         MALE,
         NOT_SPECIFIED

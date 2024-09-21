@@ -4,28 +4,26 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ponds")
+@Document(collection = "ponds")
 public class Pond {
     @Id
-    @GeneratedValue
     private UUID id;
 
-    @OneToMany(mappedBy = "pond")
+    //OneToMany
     private List<Koi> koi;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    //ManyToOne
+    private UUID userId;
 
-    @OneToMany(mappedBy = "pond")
+    //OneToMany
     private List<Measurement> measurements;
 
     private String pondName;
@@ -35,10 +33,10 @@ public class Pond {
     private int skimmerCount;
     private int pumpCapacity;
     private String imgUrl;
-    private status status;
+    private Status status;
     private boolean isQualified;
 
-    public enum status {
+    public enum Status {
         ACTIVE,
         INACTIVE
     }

@@ -4,34 +4,31 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "koi_records")
+@Document(collection = "koi_records")
 public class KoiRecord {
     @Id
-    @GeneratedValue
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "koi_id")
-    private Koi koi;
+    // @ManyToOne
+    private UUID koiId;
 
-    @ManyToOne
-    @JoinColumn(name = "development_stage_id")
-    private DevelopmentStage developmentStage;
+    // @ManyToOne
+    private UUID developmentStageId;
 
     private double weight;
     private LocalDateTime recordOn;
     private double length;
-    private physique physique;
+    private Physique physique;
 
-    public enum physique {
+    public enum Physique {
         NORMAL,
         CORPULENT,
         SLIM

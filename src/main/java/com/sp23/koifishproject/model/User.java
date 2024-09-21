@@ -4,33 +4,34 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Document(collection = "users")
 public class User {
-    private @Id @GeneratedValue UUID id;
+    @Id
+    private UUID id;
 
-    @OneToMany(mappedBy = "user")
+    //OneToMany
     private List<Pond> ponds;
 
     private String password;
     private String email;
     private String fullName;
-    private status status;
+    private Status status;
     private String phoneNumber;
-    private role role;
+    private Role role;
 
-    public enum status {
+    public enum Status {
         ACTIVE,
         INACTIVE
     }
-    public enum role {
+    public enum Role {
         ADMIN,
         SHOP,
         MEMBER
