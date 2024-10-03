@@ -1,6 +1,6 @@
 package com.sp23.koifishproject.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,9 +17,7 @@ public class User {
     @Id
     private UUID id;
 
-    //OneToMany
     private List<Pond> ponds;
-
     private String password;
     private String email;
     private String fullName;
@@ -31,10 +29,17 @@ public class User {
         ACTIVE,
         INACTIVE
     }
+
     public enum Role {
         ADMIN,
         SHOP,
         MEMBER
     }
 
+    // Phương thức để tự động tạo UUID nếu chưa có
+    public void generateIdIfAbsent() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+    }
 }
