@@ -2,6 +2,7 @@ package com.sp23.koifishproject.service;
 
 import com.sp23.koifishproject.model.User;
 import com.sp23.koifishproject.repository.mongo.UserRepository;
+import com.sp23.koifishproject.service.IService.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 import com.sp23.koifishproject.config.JwtUtil;
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, IUserService {
 
     @Autowired
     @Qualifier("mongoUserRepository")

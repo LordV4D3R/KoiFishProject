@@ -2,7 +2,7 @@ package com.sp23.koifishproject.controller;
 
 import com.sp23.koifishproject.dto.LoginRequest;
 import com.sp23.koifishproject.model.User;
-import com.sp23.koifishproject.service.UserService;
+import com.sp23.koifishproject.service.IService.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
