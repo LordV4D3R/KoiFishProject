@@ -29,19 +29,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Xử lý lỗi JWT thiếu hoặc không hợp lệ
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                // Cho phép truy cập mà không cần JWT cho login và register
                 .requestMatchers("/api/users/login").permitAll()
-                // Yêu cầu quyền ADMIN cho POST (thêm người dùng)
-                .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
-                // Các yêu cầu còn lại cho /api/users yêu cầu JWT
-                .requestMatchers("/api/users/**").authenticated()
-                // Các yêu cầu khác yêu cầu JWT
-                .anyRequest().authenticated()
+                .requestMatchers("/api/ponds/**").authenticated()
+                .requestMatchers("/api/measurements/**").authenticated()
+                .requestMatchers("/api/measure-data/**").authenticated()
+                .requestMatchers("/api/units/**").authenticated()
+                .requestMatchers("/api/kois/**").authenticated()
+                .requestMatchers("/api/feeding-schedules/**").authenticated()
+                .requestMatchers("/api/koi-records/**").authenticated()
+                .requestMatchers("/api/development-stages/**").authenticated()
+                .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers("/api/order-details/**").authenticated()
+                .requestMatchers("/api/products/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/users").authenticated() // Phải có quyền admin
+                .requestMatchers("/api/users/**").authenticated()  // Yêu cầu JWT cho các endpoint khác
+                .anyRequest().authenticated()  // Các yêu cầu khác cần xác thực
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Không dùng session
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // Sử dụng JWT, không cần session
+
 
         // Thêm JwtRequestFilter trước UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

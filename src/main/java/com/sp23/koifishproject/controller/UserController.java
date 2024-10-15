@@ -23,13 +23,11 @@ public class UserController {
         String token = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
         if (token != null) {
             System.out.println("JWT Token: " + token);  // Log JWT token sau khi login
-            return ResponseEntity.ok("Bearer " + token);
+            return ResponseEntity.ok(token);
         } else {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
-
-
 
     // Lấy danh sách tất cả người dùng
     @GetMapping
@@ -46,9 +44,11 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(404).body("User not found"));
     }
 
+    // Thêm người dùng mới
     @PostMapping
     public ResponseEntity<?> addUser(@RequestBody User user) {
         try {
+            // Nếu ponds không được gửi trong request body, danh sách này sẽ là rỗng (mặc định trong model User)
             User newUser = userService.addUser(user);
             return ResponseEntity.status(201).body(newUser);
         } catch (IllegalArgumentException e) {
@@ -57,7 +57,6 @@ public class UserController {
             return ResponseEntity.status(400).body("Error adding user: " + e.getMessage());
         }
     }
-
 
     // Xóa người dùng theo id
     @DeleteMapping("/{id}")
@@ -78,5 +77,4 @@ public class UserController {
         return updatedUser.<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(404).body("User not found"));
     }
-
 }

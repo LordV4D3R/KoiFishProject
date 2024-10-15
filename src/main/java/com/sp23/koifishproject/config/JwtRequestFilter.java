@@ -12,9 +12,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -24,6 +25,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -38,9 +41,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 email = jwtUtil.extractEmail(jwt);
-                System.out.println("Extracted Email: " + email); // Log email được trích xuất từ JWT
+                logger.info("Extracted Email: {}", email);  // Log email được trích xuất từ JWT
             } catch (ExpiredJwtException e) {
                 logger.warn("JWT token has expired");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired");
+                return;  // Ngừng xử lý khi token hết hạn
             }
         }
 
@@ -48,16 +53,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
             if (jwtUtil.isTokenValid(jwt, userDetails.getUsername())) {
                 String role = jwtUtil.extractRole(jwt);  // Lấy role từ JWT token
-                System.out.println("Role extracted from token: " + role); // Log role
+                logger.info("JWT token is valid for email: {} with role: {}", email, role);  // Log nếu token hợp lệ
+
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                System.out.println("Authentication set for: " + email); // Log xác thực thành công
+                logger.info("Authentication set for: {}", email);
             } else {
-                System.out.println("Invalid JWT Token for: " + email); // Log JWT không hợp lệ
+                logger.warn("JWT token is invalid for email: {}", email);  // Log nếu token không hợp lệ
             }
         }
         chain.doFilter(request, response);
     }
 }
+
+

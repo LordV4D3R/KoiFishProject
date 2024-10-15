@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.function.Function;
 public class JwtUtil {
 
     // Sử dụng SecretKey an toàn cho HS256
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);  // Tạo secret key an toàn
 
     // Tạo JWT từ email (subject) và role (claims)
     public String generateToken(String email, String role) {
@@ -24,14 +25,14 @@ public class JwtUtil {
 
         // Tạo claims chứa thông tin role
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
+        claims.put("role", "ROLE_" + role);
 
         return Jwts.builder()
                 .setClaims(claims)  // Thêm role vào claims
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Hết hạn sau 10 giờ
-                .signWith(SECRET_KEY)
+                .signWith(SECRET_KEY) // Sử dụng key an toàn từ SECRET_KEY
                 .compact();
     }
 
@@ -54,18 +55,26 @@ public class JwtUtil {
         return (extractedEmail.equals(email) && !isTokenExpired(token));
     }
 
+    // Lấy tất cả claims từ token
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)  // Sử dụng secret key an toàn để parse token
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
+    // Kiểm tra token đã hết hạn chưa
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    // Lấy ngày hết hạn của token
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    // Lấy claim từ token
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
