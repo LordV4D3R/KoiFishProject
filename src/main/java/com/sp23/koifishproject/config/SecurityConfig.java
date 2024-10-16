@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/koi-records/**").authenticated()
                 .requestMatchers("/api/development-stages/**").authenticated()
                 .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers("/api/orders/updateStatus/**").authenticated()
                 .requestMatchers("/api/order-details/**").authenticated()
                 .requestMatchers("/api/products/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/users").authenticated() // Phải có quyền admin

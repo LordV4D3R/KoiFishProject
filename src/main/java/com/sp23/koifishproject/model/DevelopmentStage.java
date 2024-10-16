@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,5 @@ public class DevelopmentStage {
     private double requiredFoodAmount;
 
     //OneToMany
-    @DBRef
-    private List<KoiRecord> koiRecords;
+    private List<UUID> koiRecords = new ArrayList<>(); // Không sử dụng @DBRef
 }

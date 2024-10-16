@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,13 +19,13 @@ public class Pond {
     private UUID id;
 
     //OneToMany
-    private List<Koi> koi;
+    private List<UUID> koi= new ArrayList<>();
 
     //ManyToOne
     private UUID userId;
 
     //OneToMany
-    private List<Measurement> measurements;
+    private List<UUID> measurements = new ArrayList<>();
 
     private String pondName;
     private int volume;

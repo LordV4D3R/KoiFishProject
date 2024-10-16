@@ -19,19 +19,27 @@ public class Order {
     private UUID id;
 
     // Many-to-One relationship with User
-    private UUID idUser;  // Liên kết với người dùng
+    private UUID idUser;
 
     // One-to-Many relationship with OrderDetail
     @DBRef
     private List<OrderDetail> orderDetails;
 
-    // Tổng giá trị của đơn hàng
     private double totalPrice;
 
-    // Tính tổng số tiền dựa trên các OrderDetail
+    // Thêm thuộc tính trạng thái
+    private Status status;
+
+    public enum Status {
+        PENDING,
+        PAID,
+        CANCELED
+    }
+
     public void calculateTotalPrice() {
         this.totalPrice = orderDetails.stream()
                 .mapToDouble(OrderDetail::getPriceOrderDetail)
                 .sum();
     }
 }
+

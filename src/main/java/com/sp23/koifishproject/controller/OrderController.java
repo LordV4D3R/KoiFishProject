@@ -1,5 +1,6 @@
 package com.sp23.koifishproject.controller;
 
+import com.sp23.koifishproject.dto.UpdateOrderStatusDTO;
 import com.sp23.koifishproject.model.Order;
 import com.sp23.koifishproject.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,18 @@ public class OrderController {
         return updatedOrder.<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(404).body("Order not found"));
     }
+    @PutMapping("/updateStatus/{id}")
+    public ResponseEntity<Order> updateOrderStatus(
+            @PathVariable UUID id,
+            @RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) {
+
+        Order.Status status = updateOrderStatusDTO.getStatus();
+        Optional<Order> updatedOrder = orderService.updateOrderStatus(id, status);
+
+        return updatedOrder.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 
     // Xóa đơn hàng theo ID
     @DeleteMapping("/{id}")

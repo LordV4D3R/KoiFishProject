@@ -1,7 +1,9 @@
 package com.sp23.koifishproject.service;
 
 import com.sp23.koifishproject.model.FeedingSchedule;
+import com.sp23.koifishproject.model.Koi;
 import com.sp23.koifishproject.repository.mongo.FeedingScheduleRepository;
+import com.sp23.koifishproject.repository.mongo.KoiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ public class FeedingScheduleService {
 
     @Autowired
     private FeedingScheduleRepository feedingScheduleRepository;
+
+    @Autowired
+    private KoiRepository koiRepository;
 
     // Lấy tất cả FeedingSchedule
     public List<FeedingSchedule> getAllFeedingSchedules() {
@@ -31,7 +36,23 @@ public class FeedingScheduleService {
         if (feedingSchedule.getId() == null) {
             feedingSchedule.setId(UUID.randomUUID());
         }
-        return feedingScheduleRepository.save(feedingSchedule);
+
+        // Lưu FeedingSchedule
+        FeedingSchedule savedFeedingSchedule = feedingScheduleRepository.save(feedingSchedule);
+
+        // Tìm Koi bằng koiId từ FeedingSchedule
+        Optional<Koi> koiOptional = koiRepository.findById(feedingSchedule.getKoiId());
+        if (koiOptional.isPresent()) {
+            Koi koi = koiOptional.get();
+
+            // Thêm ID của FeedingSchedule vào danh sách feedingSchedules của Koi
+            koi.getFeedingSchedules().add(savedFeedingSchedule.getId());
+
+            // Lưu lại Koi sau khi cập nhật
+            koiRepository.save(koi);
+        }
+
+        return savedFeedingSchedule;
     }
 
     // Cập nhật FeedingSchedule theo ID

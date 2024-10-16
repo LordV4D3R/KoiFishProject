@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +23,8 @@ public class Measurement {
     private UUID pondId;
 
     //OneToMany
-    private List<MeasureData> measureData;
+    private List<UUID> measureData = new ArrayList<>();
+
 
     private LocalDateTime measureOn;
     private String note;

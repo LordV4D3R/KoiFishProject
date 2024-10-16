@@ -4,7 +4,8 @@ import com.sp23.koifishproject.model.Pond;
 import com.sp23.koifishproject.repository.mongo.PondRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.sp23.koifishproject.model.User;
+import com.sp23.koifishproject.repository.mongo.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +15,8 @@ public class PondService {
 
     @Autowired
     private PondRepository pondRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     // Lấy tất cả các pond
     public List<Pond> getAllPonds() {
@@ -31,7 +34,18 @@ public class PondService {
         if (pond.getId() == null) {
             pond.setId(UUID.randomUUID());
         }
-        return pondRepository.save(pond);
+        Pond savedPond = pondRepository.save(pond);
+
+        // Tìm kiếm User và thêm Pond vào danh sách ponds
+        Optional<User> userOptional = userRepository.findById(pond.getUserId());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.getPonds().add(savedPond); // Thêm Pond vào danh sách ponds của User
+            userRepository.save(user); // Lưu lại User sau khi thêm Pond
+        }
+
+        return savedPond;
+
     }
 
     // Cập nhật pond theo id
