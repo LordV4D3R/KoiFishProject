@@ -12,6 +12,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -27,12 +32,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.cors().and().csrf().disable() // Thêm cấu hình CORS
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/users/login").permitAll()
+                .requestMatchers("/api/users/**").permitAll()  // Không yêu cầu xác thực cho tất cả API của user
                 .requestMatchers("/api/ponds/**").authenticated()
                 .requestMatchers("/api/measurements/**").authenticated()
                 .requestMatchers("/api/measure-data/**").authenticated()
@@ -45,12 +50,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/orders/updateStatus/**").authenticated()
                 .requestMatchers("/api/order-details/**").authenticated()
                 .requestMatchers("/api/products/**").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/users").authenticated() // Phải có quyền admin
-                .requestMatchers("/api/users/**").authenticated()  // Yêu cầu JWT cho các endpoint khác
                 .anyRequest().authenticated()  // Các yêu cầu khác cần xác thực
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // Sử dụng JWT, không cần session
-
 
         // Thêm JwtRequestFilter trước UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
@@ -65,5 +67,17 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // Cấu hình CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*")); // Cho phép tất cả nguồn
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Các phương thức HTTP được phép
+        configuration.setAllowedHeaders(Arrays.asList("*")); // Cho phép tất cả headers
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Áp dụng cho tất cả endpoint
+        return source;
     }
 }
