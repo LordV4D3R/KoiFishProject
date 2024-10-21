@@ -26,7 +26,7 @@ public class DevelopmentStageService {
     }
 
     // Thêm mới DevelopmentStage
-    public DevelopmentStage addDevelopmentStage(DevelopmentStage developmentStage) {
+    public DevelopmentStage addDevelopmentStage(DevelopmentStage developmentStage) throws Exception {
         // Generate UUID nếu chưa có
         if (developmentStage.getId() == null) {
             developmentStage.setId(UUID.randomUUID());
@@ -35,13 +35,13 @@ public class DevelopmentStageService {
     }
 
     // Cập nhật DevelopmentStage theo ID
-    public Optional<DevelopmentStage> updateDevelopmentStageById(UUID id, DevelopmentStage developmentStageDetails) {
-        return developmentStageRepository.findById(id).map(existingDevelopmentStage -> {
+    public Optional<DevelopmentStage> updateDevelopmentStageById(UUID id, DevelopmentStage developmentStageDetails) throws Exception {
+        return Optional.ofNullable(developmentStageRepository.findById(id).map(existingDevelopmentStage -> {
             existingDevelopmentStage.setStageName(developmentStageDetails.getStageName());
             existingDevelopmentStage.setRequiredFoodAmount(developmentStageDetails.getRequiredFoodAmount());
             existingDevelopmentStage.setKoiRecords(developmentStageDetails.getKoiRecords());
             return developmentStageRepository.save(existingDevelopmentStage);
-        });
+        }).orElseThrow(() -> new Exception("DevelopmentStage not found")));
     }
 
     // Xóa DevelopmentStage theo ID

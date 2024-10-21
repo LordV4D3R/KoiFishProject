@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/order-details")
@@ -19,17 +17,37 @@ public class OrderDetailController {
 
     // Lấy tất cả chi tiết đơn hàng
     @GetMapping
-    public ResponseEntity<List<OrderDetail>> getAllOrderDetails() {
-        List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetails();
-        return ResponseEntity.ok(orderDetails);
+    public ResponseEntity<?> getAllOrderDetails() {
+        try {
+            List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetails();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", orderDetails);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve order details: " + e.getMessage()));
+        }
     }
 
     // Lấy chi tiết đơn hàng theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getOrderDetailById(@PathVariable UUID id) {
-        Optional<OrderDetail> orderDetail = orderDetailService.getOrderDetailById(id);
-        return orderDetail.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("OrderDetail not found"));
+    public ResponseEntity<?> getOrderDetailById(@PathVariable UUID id) {
+        try {
+            Optional<OrderDetail> orderDetail = orderDetailService.getOrderDetailById(id);
+            if (orderDetail.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", orderDetail.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "OrderDetail not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve order detail: " + e.getMessage()));
+        }
     }
 
     // Tạo OrderDetail mới
@@ -37,29 +55,54 @@ public class OrderDetailController {
     public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetail orderDetail) {
         try {
             OrderDetail createdOrderDetail = orderDetailService.createOrderDetail(orderDetail);
-            return ResponseEntity.ok(createdOrderDetail);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "OrderDetail created successfully");
+            response.put("data", createdOrderDetail);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return ResponseEntity.status(400).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Error creating order detail: " + e.getMessage()));
         }
     }
 
     // Cập nhật chi tiết đơn hàng theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateOrderDetailById(@PathVariable UUID id, @RequestBody OrderDetail orderDetail) {
-        Optional<OrderDetail> updatedOrderDetail = orderDetailService.updateOrderDetailById(id, orderDetail);
-        return updatedOrderDetail.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("OrderDetail not found"));
+    public ResponseEntity<?> updateOrderDetailById(@PathVariable UUID id, @RequestBody OrderDetail orderDetail) {
+        try {
+            Optional<OrderDetail> updatedOrderDetail = orderDetailService.updateOrderDetailById(id, orderDetail);
+            if (updatedOrderDetail.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "OrderDetail updated successfully");
+                response.put("data", updatedOrderDetail.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "OrderDetail not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update order detail: " + e.getMessage()));
+        }
     }
 
     // Xóa chi tiết đơn hàng theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrderDetailById(@PathVariable UUID id) {
-        Optional<OrderDetail> orderDetail = orderDetailService.getOrderDetailById(id);
-        if (orderDetail.isPresent()) {
-            orderDetailService.deleteOrderDetailById(id);
-            return ResponseEntity.status(204).body("OrderDetail deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("OrderDetail not found");
+    public ResponseEntity<?> deleteOrderDetailById(@PathVariable UUID id) {
+        try {
+            Optional<OrderDetail> orderDetail = orderDetailService.getOrderDetailById(id);
+            if (orderDetail.isPresent()) {
+                orderDetailService.deleteOrderDetailById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "OrderDetail deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "OrderDetail not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete order detail: " + e.getMessage()));
         }
     }
 }

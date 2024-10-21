@@ -28,6 +28,7 @@ public class OrderService {
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
+
     // Lấy tất cả đơn hàng
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -97,6 +98,8 @@ public class OrderService {
             return orderRepository.save(existingOrder);
         });
     }
+
+    // Cập nhật trạng thái đơn hàng
     public Optional<Order> updateOrderStatus(UUID id, Order.Status status) {
         return orderRepository.findById(id).map(existingOrder -> {
 
@@ -120,7 +123,6 @@ public class OrderService {
             return orderRepository.save(existingOrder);
         });
     }
-
 
     // Xóa đơn hàng theo ID
     public void deleteOrderById(UUID id) {

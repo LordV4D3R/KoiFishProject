@@ -54,7 +54,6 @@ public class MeasurementService {
         return savedMeasurement;
     }
 
-
     // Cập nhật đo lường theo ID
     public Optional<Measurement> updateMeasurementById(UUID id, Measurement measurementDetails) {
         return measurementRepository.findById(id).map(existingMeasurement -> {

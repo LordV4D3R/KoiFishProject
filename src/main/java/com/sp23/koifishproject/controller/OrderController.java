@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -23,56 +21,108 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestBody Order order) {
         try {
             Order createdOrder = orderService.createOrder(order);
-            return ResponseEntity.ok(createdOrder);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "Order created successfully");
+            response.put("data", createdOrder);
+            return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return ResponseEntity.status(400).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
 
     // Lấy đơn hàng theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getOrderById(@PathVariable UUID id) {
-        Optional<Order> order = orderService.getOrderById(id);
-        return order.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("Order not found"));
+    public ResponseEntity<?> getOrderById(@PathVariable UUID id) {
+        try {
+            Optional<Order> order = orderService.getOrderById(id);
+            if (order.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", order.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Order not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve order: " + e.getMessage()));
+        }
     }
 
     // Lấy tất cả đơn hàng
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<?> getAllOrders() {
+        try {
+            List<Order> orders = orderService.getAllOrders();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", orders);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve orders: " + e.getMessage()));
+        }
     }
 
     // Cập nhật đơn hàng theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateOrderById(@PathVariable UUID id, @RequestBody Order order) {
-        Optional<Order> updatedOrder = orderService.updateOrderById(id, order);
-        return updatedOrder.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("Order not found"));
+    public ResponseEntity<?> updateOrderById(@PathVariable UUID id, @RequestBody Order order) {
+        try {
+            Optional<Order> updatedOrder = orderService.updateOrderById(id, order);
+            if (updatedOrder.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "Order updated successfully");
+                response.put("data", updatedOrder.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Order not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update order: " + e.getMessage()));
+        }
     }
+
+    // Cập nhật trạng thái đơn hàng
     @PutMapping("/updateStatus/{id}")
-    public ResponseEntity<Order> updateOrderStatus(
-            @PathVariable UUID id,
-            @RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) {
+    public ResponseEntity<?> updateOrderStatus(@PathVariable UUID id, @RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) {
+        try {
+            Order.Status status = updateOrderStatusDTO.getStatus();
+            Optional<Order> updatedOrder = orderService.updateOrderStatus(id, status);
 
-        Order.Status status = updateOrderStatusDTO.getStatus();
-        Optional<Order> updatedOrder = orderService.updateOrderStatus(id, status);
-
-        return updatedOrder.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+            if (updatedOrder.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "Order status updated successfully");
+                response.put("data", updatedOrder.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Order not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update order status: " + e.getMessage()));
+        }
     }
-
 
     // Xóa đơn hàng theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable UUID id) {
-        Optional<Order> order = orderService.getOrderById(id);
-        if (order.isPresent()) {
-            orderService.deleteOrderById(id);
-            return ResponseEntity.status(204).body("Order deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("Order not found");
+    public ResponseEntity<?> deleteOrderById(@PathVariable UUID id) {
+        try {
+            Optional<Order> order = orderService.getOrderById(id);
+            if (order.isPresent()) {
+                orderService.deleteOrderById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "Order deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Order not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete order: " + e.getMessage()));
         }
     }
 }

@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/koi-records")
@@ -19,43 +17,90 @@ public class KoiRecordController {
 
     // Lấy tất cả KoiRecord
     @GetMapping
-    public ResponseEntity<List<KoiRecord>> getAllKoiRecords() {
-        List<KoiRecord> koiRecords = koiRecordService.getAllKoiRecords();
-        return ResponseEntity.ok(koiRecords);
+    public ResponseEntity<?> getAllKoiRecords() {
+        try {
+            List<KoiRecord> koiRecords = koiRecordService.getAllKoiRecords();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", koiRecords);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve koi records: " + e.getMessage()));
+        }
     }
 
     // Lấy KoiRecord theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getKoiRecordById(@PathVariable UUID id) {
-        Optional<KoiRecord> koiRecord = koiRecordService.getKoiRecordById(id);
-        return koiRecord.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("KoiRecord not found"));
+    public ResponseEntity<?> getKoiRecordById(@PathVariable UUID id) {
+        try {
+            Optional<KoiRecord> koiRecord = koiRecordService.getKoiRecordById(id);
+            if (koiRecord.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", koiRecord.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "KoiRecord not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve koi record: " + e.getMessage()));
+        }
     }
 
     // Thêm mới KoiRecord
     @PostMapping
-    public ResponseEntity<KoiRecord> addKoiRecord(@RequestBody KoiRecord koiRecord) {
-        KoiRecord newKoiRecord = koiRecordService.addKoiRecord(koiRecord);
-        return ResponseEntity.status(201).body(newKoiRecord);
+    public ResponseEntity<?> addKoiRecord(@RequestBody KoiRecord koiRecord) {
+        try {
+            KoiRecord newKoiRecord = koiRecordService.addKoiRecord(koiRecord);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "KoiRecord created successfully");
+            response.put("data", newKoiRecord);
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Error adding koi record: " + e.getMessage()));
+        }
     }
 
     // Cập nhật KoiRecord theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateKoiRecordById(@PathVariable UUID id, @RequestBody KoiRecord koiRecord) {
-        Optional<KoiRecord> updatedKoiRecord = koiRecordService.updateKoiRecordById(id, koiRecord);
-        return updatedKoiRecord.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("KoiRecord not found"));
+    public ResponseEntity<?> updateKoiRecordById(@PathVariable UUID id, @RequestBody KoiRecord koiRecord) {
+        try {
+            Optional<KoiRecord> updatedKoiRecord = koiRecordService.updateKoiRecordById(id, koiRecord);
+            if (updatedKoiRecord.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "KoiRecord updated successfully");
+                response.put("data", updatedKoiRecord.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "KoiRecord not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update koi record: " + e.getMessage()));
+        }
     }
 
     // Xóa KoiRecord theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteKoiRecordById(@PathVariable UUID id) {
-        Optional<KoiRecord> koiRecord = koiRecordService.getKoiRecordById(id);
-        if (koiRecord.isPresent()) {
-            koiRecordService.deleteKoiRecordById(id);
-            return ResponseEntity.status(204).body("KoiRecord deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("KoiRecord not found");
+    public ResponseEntity<?> deleteKoiRecordById(@PathVariable UUID id) {
+        try {
+            Optional<KoiRecord> koiRecord = koiRecordService.getKoiRecordById(id);
+            if (koiRecord.isPresent()) {
+                koiRecordService.deleteKoiRecordById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "KoiRecord deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "KoiRecord not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete koi record: " + e.getMessage()));
         }
     }
 }

@@ -18,6 +18,7 @@ public class KoiService {
     private KoiRepository koiRepository;
     @Autowired
     private PondRepository pondRepository;
+
     // Lấy tất cả Koi
     public List<Koi> getAllKois() {
         return koiRepository.findAll();

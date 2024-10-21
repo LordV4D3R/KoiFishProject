@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,61 +18,108 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        String token = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        if (token != null) {
-            System.out.println("JWT Token: " + token);  // Log JWT token sau khi login
-            return ResponseEntity.ok(token);
-        } else {
-            return ResponseEntity.status(401).body("Invalid email or password");
+        try {
+            Optional<User> userOptional = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                String token = userService.generateToken(user);
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("token", token);
+                response.put("user", user);
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(401)
+                        .body(Collections.singletonMap("error", "Invalid email or password"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Login failed: " + e.getMessage()));
         }
     }
 
-    // Lấy danh sách tất cả người dùng
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userService.getAllUsers();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", users);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve users: " + e.getMessage()));
+        }
     }
 
-    // Lấy thông tin người dùng theo id
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable UUID id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("User not found"));
+    public ResponseEntity<?> getUserById(@PathVariable UUID id) {
+        try {
+            Optional<User> user = userService.getUserById(id);
+            if (user.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", user.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "User not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve user: " + e.getMessage()));
+        }
     }
 
-    // Thêm người dùng mới
     @PostMapping
     public ResponseEntity<?> addUser(@RequestBody User user) {
         try {
-            // Nếu ponds không được gửi trong request body, danh sách này sẽ là rỗng (mặc định trong model User)
             User newUser = userService.addUser(user);
-            return ResponseEntity.status(201).body(newUser);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body(e.getMessage());  // Trả về thông báo lỗi "User with email already exists"
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "User created successfully");
+            response.put("data", newUser);
+            return ResponseEntity.status(201).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body("Error adding user: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Error adding user: " + e.getMessage()));
         }
     }
 
-    // Xóa người dùng theo id
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUserById(@PathVariable UUID id, @RequestBody User user) {
+        try {
+            Optional<User> updatedUser = userService.updateUserById(id, user);
+            if (updatedUser.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "User updated successfully");
+                response.put("data", updatedUser.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "User not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update user: " + e.getMessage()));
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable UUID id) {
-        Optional<User> user = userService.getUserById(id);
-        if (user.isPresent()) {
-            userService.deleteUserById(id);
-            return ResponseEntity.status(204).body("User deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("User not found");
+        try {
+            Optional<User> user = userService.getUserById(id);
+            if (user.isPresent()) {
+                userService.deleteUserById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "User deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "User not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete user: " + e.getMessage()));
         }
     }
-
-    // Cập nhật thông tin người dùng theo id
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUserById(@PathVariable UUID id, @RequestBody User user) {
-        Optional<User> updatedUser = userService.updateUserById(id, user);
-        return updatedUser.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("User not found"));
-    }
 }
+

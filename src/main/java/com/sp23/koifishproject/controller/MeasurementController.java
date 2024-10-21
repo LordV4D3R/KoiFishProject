@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/measurements")
@@ -19,43 +17,90 @@ public class MeasurementController {
 
     // Lấy tất cả các đo lường
     @GetMapping
-    public ResponseEntity<List<Measurement>> getAllMeasurements() {
-        List<Measurement> measurements = measurementService.getAllMeasurements();
-        return ResponseEntity.ok(measurements);
+    public ResponseEntity<?> getAllMeasurements() {
+        try {
+            List<Measurement> measurements = measurementService.getAllMeasurements();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", measurements);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve measurements: " + e.getMessage()));
+        }
     }
 
     // Lấy đo lường theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getMeasurementById(@PathVariable UUID id) {
-        Optional<Measurement> measurement = measurementService.getMeasurementById(id);
-        return measurement.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("Measurement not found"));
+    public ResponseEntity<?> getMeasurementById(@PathVariable UUID id) {
+        try {
+            Optional<Measurement> measurement = measurementService.getMeasurementById(id);
+            if (measurement.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", measurement.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Measurement not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve measurement: " + e.getMessage()));
+        }
     }
 
     // Thêm mới đo lường
     @PostMapping
-    public ResponseEntity<Measurement> addMeasurement(@RequestBody Measurement measurement) {
-        Measurement newMeasurement = measurementService.addMeasurement(measurement);
-        return ResponseEntity.status(201).body(newMeasurement);
+    public ResponseEntity<?> addMeasurement(@RequestBody Measurement measurement) {
+        try {
+            Measurement newMeasurement = measurementService.addMeasurement(measurement);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "Measurement created successfully");
+            response.put("data", newMeasurement);
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Error adding measurement: " + e.getMessage()));
+        }
     }
 
     // Cập nhật đo lường theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMeasurementById(@PathVariable UUID id, @RequestBody Measurement measurement) {
-        Optional<Measurement> updatedMeasurement = measurementService.updateMeasurementById(id, measurement);
-        return updatedMeasurement.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("Measurement not found"));
+    public ResponseEntity<?> updateMeasurementById(@PathVariable UUID id, @RequestBody Measurement measurement) {
+        try {
+            Optional<Measurement> updatedMeasurement = measurementService.updateMeasurementById(id, measurement);
+            if (updatedMeasurement.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "Measurement updated successfully");
+                response.put("data", updatedMeasurement.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Measurement not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update measurement: " + e.getMessage()));
+        }
     }
 
     // Xóa đo lường theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMeasurementById(@PathVariable UUID id) {
-        Optional<Measurement> measurement = measurementService.getMeasurementById(id);
-        if (measurement.isPresent()) {
-            measurementService.deleteMeasurementById(id);
-            return ResponseEntity.status(204).body("Measurement deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("Measurement not found");
+    public ResponseEntity<?> deleteMeasurementById(@PathVariable UUID id) {
+        try {
+            Optional<Measurement> measurement = measurementService.getMeasurementById(id);
+            if (measurement.isPresent()) {
+                measurementService.deleteMeasurementById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "Measurement deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Measurement not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete measurement: " + e.getMessage()));
         }
     }
 }

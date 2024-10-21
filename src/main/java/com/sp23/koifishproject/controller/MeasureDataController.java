@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/measure-data")
@@ -19,43 +17,90 @@ public class MeasureDataController {
 
     // Lấy tất cả MeasureData
     @GetMapping
-    public ResponseEntity<List<MeasureData>> getAllMeasureData() {
-        List<MeasureData> measureDataList = measureDataService.getAllMeasureData();
-        return ResponseEntity.ok(measureDataList);
+    public ResponseEntity<?> getAllMeasureData() {
+        try {
+            List<MeasureData> measureDataList = measureDataService.getAllMeasureData();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", measureDataList);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve measure data: " + e.getMessage()));
+        }
     }
 
     // Lấy MeasureData theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getMeasureDataById(@PathVariable UUID id) {
-        Optional<MeasureData> measureData = measureDataService.getMeasureDataById(id);
-        return measureData.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("MeasureData not found"));
+    public ResponseEntity<?> getMeasureDataById(@PathVariable UUID id) {
+        try {
+            Optional<MeasureData> measureData = measureDataService.getMeasureDataById(id);
+            if (measureData.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", measureData.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "MeasureData not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve measure data: " + e.getMessage()));
+        }
     }
 
     // Thêm mới MeasureData
     @PostMapping
-    public ResponseEntity<MeasureData> addMeasureData(@RequestBody MeasureData measureData) {
-        MeasureData newMeasureData = measureDataService.addMeasureData(measureData);
-        return ResponseEntity.status(201).body(newMeasureData);
+    public ResponseEntity<?> addMeasureData(@RequestBody MeasureData measureData) {
+        try {
+            MeasureData newMeasureData = measureDataService.addMeasureData(measureData);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "MeasureData created successfully");
+            response.put("data", newMeasureData);
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Error adding measure data: " + e.getMessage()));
+        }
     }
 
     // Cập nhật MeasureData theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMeasureDataById(@PathVariable UUID id, @RequestBody MeasureData measureData) {
-        Optional<MeasureData> updatedMeasureData = measureDataService.updateMeasureDataById(id, measureData);
-        return updatedMeasureData.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("MeasureData not found"));
+    public ResponseEntity<?> updateMeasureDataById(@PathVariable UUID id, @RequestBody MeasureData measureData) {
+        try {
+            Optional<MeasureData> updatedMeasureData = measureDataService.updateMeasureDataById(id, measureData);
+            if (updatedMeasureData.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "MeasureData updated successfully");
+                response.put("data", updatedMeasureData.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "MeasureData not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update measure data: " + e.getMessage()));
+        }
     }
 
     // Xóa MeasureData theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMeasureDataById(@PathVariable UUID id) {
-        Optional<MeasureData> measureData = measureDataService.getMeasureDataById(id);
-        if (measureData.isPresent()) {
-            measureDataService.deleteMeasureDataById(id);
-            return ResponseEntity.status(204).body("MeasureData deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("MeasureData not found");
+    public ResponseEntity<?> deleteMeasureDataById(@PathVariable UUID id) {
+        try {
+            Optional<MeasureData> measureData = measureDataService.getMeasureDataById(id);
+            if (measureData.isPresent()) {
+                measureDataService.deleteMeasureDataById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "MeasureData deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "MeasureData not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete measure data: " + e.getMessage()));
         }
     }
 }

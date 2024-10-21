@@ -29,7 +29,7 @@ public class PondService {
     }
 
     // Thêm mới pond
-    public Pond addPond(Pond pond) {
+    public Pond addPond(Pond pond) throws Exception {
         // Tạo UUID nếu chưa có
         if (pond.getId() == null) {
             pond.setId(UUID.randomUUID());
@@ -42,6 +42,8 @@ public class PondService {
             User user = userOptional.get();
             user.getPonds().add(savedPond); // Thêm Pond vào danh sách ponds của User
             userRepository.save(user); // Lưu lại User sau khi thêm Pond
+        } else {
+            throw new Exception("User not found, cannot add pond");
         }
 
         return savedPond;
@@ -49,8 +51,8 @@ public class PondService {
     }
 
     // Cập nhật pond theo id
-    public Optional<Pond> updatePondById(UUID id, Pond pond) {
-        return pondRepository.findById(id).map(existingPond -> {
+    public Optional<Pond> updatePondById(UUID id, Pond pond) throws Exception {
+        return Optional.ofNullable(pondRepository.findById(id).map(existingPond -> {
             // Cập nhật các thuộc tính của pond
             existingPond.setPondName(pond.getPondName());
             existingPond.setVolume(pond.getVolume());
@@ -66,7 +68,7 @@ public class PondService {
             existingPond.setMeasurements(pond.getMeasurements()); // Cập nhật danh sách Measurement
 
             return pondRepository.save(existingPond);
-        });
+        }).orElseThrow(() -> new Exception("Pond not found")));
     }
 
     // Xóa pond theo id
@@ -74,3 +76,4 @@ public class PondService {
         pondRepository.deleteById(id);
     }
 }
+

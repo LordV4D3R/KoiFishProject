@@ -29,8 +29,7 @@ public class UserService implements UserDetailsService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // Xử lý đăng nhập và tạo JWT token
-    public String login(String email, String rawPassword) {
+    public Optional<User> login(String email, String rawPassword) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -38,14 +37,18 @@ public class UserService implements UserDetailsService {
 
             // So sánh mật khẩu đã mã hóa từ DB với mật khẩu thô mà người dùng nhập vào
             if (passwordEncoder.matches(rawPassword, encryptedPasswordInDb)) {
-                // Lấy role của người dùng và truyền vào JWT token
-                String role = user.getRole().name();
-                String token = jwtUtil.generateToken(user.getEmail(), role);
-                return token;
+                return Optional.of(user);  // Trả về đối tượng user nếu đăng nhập thành công
             }
         }
-        return null;
+        return Optional.empty();  // Trả về empty nếu thất bại
     }
+
+    // Phương thức tạo token dựa trên email và role của user
+    public String generateToken(User user) {
+        String role = user.getRole().name();
+        return jwtUtil.generateToken(user.getEmail(), role);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

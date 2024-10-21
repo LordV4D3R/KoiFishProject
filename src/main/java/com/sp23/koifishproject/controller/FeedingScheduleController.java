@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/feeding-schedules")
@@ -19,43 +17,90 @@ public class FeedingScheduleController {
 
     // Lấy tất cả FeedingSchedule
     @GetMapping
-    public ResponseEntity<List<FeedingSchedule>> getAllFeedingSchedules() {
-        List<FeedingSchedule> feedingSchedules = feedingScheduleService.getAllFeedingSchedules();
-        return ResponseEntity.ok(feedingSchedules);
+    public ResponseEntity<?> getAllFeedingSchedules() {
+        try {
+            List<FeedingSchedule> feedingSchedules = feedingScheduleService.getAllFeedingSchedules();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", feedingSchedules);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve feeding schedules: " + e.getMessage()));
+        }
     }
 
     // Lấy FeedingSchedule theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getFeedingScheduleById(@PathVariable UUID id) {
-        Optional<FeedingSchedule> feedingSchedule = feedingScheduleService.getFeedingScheduleById(id);
-        return feedingSchedule.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("FeedingSchedule not found"));
+    public ResponseEntity<?> getFeedingScheduleById(@PathVariable UUID id) {
+        try {
+            Optional<FeedingSchedule> feedingSchedule = feedingScheduleService.getFeedingScheduleById(id);
+            if (feedingSchedule.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "success");
+                response.put("data", feedingSchedule.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "FeedingSchedule not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve feeding schedule: " + e.getMessage()));
+        }
     }
 
     // Thêm mới FeedingSchedule
     @PostMapping
-    public ResponseEntity<FeedingSchedule> addFeedingSchedule(@RequestBody FeedingSchedule feedingSchedule) {
-        FeedingSchedule newFeedingSchedule = feedingScheduleService.addFeedingSchedule(feedingSchedule);
-        return ResponseEntity.status(201).body(newFeedingSchedule);
+    public ResponseEntity<?> addFeedingSchedule(@RequestBody FeedingSchedule feedingSchedule) {
+        try {
+            FeedingSchedule newFeedingSchedule = feedingScheduleService.addFeedingSchedule(feedingSchedule);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "FeedingSchedule created successfully");
+            response.put("data", newFeedingSchedule);
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Error adding feeding schedule: " + e.getMessage()));
+        }
     }
 
     // Cập nhật FeedingSchedule theo ID
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateFeedingScheduleById(@PathVariable UUID id, @RequestBody FeedingSchedule feedingSchedule) {
-        Optional<FeedingSchedule> updatedFeedingSchedule = feedingScheduleService.updateFeedingScheduleById(id, feedingSchedule);
-        return updatedFeedingSchedule.<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body("FeedingSchedule not found"));
+    public ResponseEntity<?> updateFeedingScheduleById(@PathVariable UUID id, @RequestBody FeedingSchedule feedingSchedule) {
+        try {
+            Optional<FeedingSchedule> updatedFeedingSchedule = feedingScheduleService.updateFeedingScheduleById(id, feedingSchedule);
+            if (updatedFeedingSchedule.isPresent()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("status", "FeedingSchedule updated successfully");
+                response.put("data", updatedFeedingSchedule.get());
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "FeedingSchedule not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to update feeding schedule: " + e.getMessage()));
+        }
     }
 
     // Xóa FeedingSchedule theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteFeedingScheduleById(@PathVariable UUID id) {
-        Optional<FeedingSchedule> feedingSchedule = feedingScheduleService.getFeedingScheduleById(id);
-        if (feedingSchedule.isPresent()) {
-            feedingScheduleService.deleteFeedingScheduleById(id);
-            return ResponseEntity.status(204).body("FeedingSchedule deleted successfully");
-        } else {
-            return ResponseEntity.status(404).body("FeedingSchedule not found");
+    public ResponseEntity<?> deleteFeedingScheduleById(@PathVariable UUID id) {
+        try {
+            Optional<FeedingSchedule> feedingSchedule = feedingScheduleService.getFeedingScheduleById(id);
+            if (feedingSchedule.isPresent()) {
+                feedingScheduleService.deleteFeedingScheduleById(id);
+                return ResponseEntity.status(204)
+                        .body(Collections.singletonMap("status", "FeedingSchedule deleted successfully"));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "FeedingSchedule not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to delete feeding schedule: " + e.getMessage()));
         }
     }
 }

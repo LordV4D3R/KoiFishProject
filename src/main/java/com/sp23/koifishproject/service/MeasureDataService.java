@@ -22,6 +22,7 @@ public class MeasureDataService {
     private MeasurementRepository measurementRepository;
     @Autowired
     private UnitRepository unitRepository;
+
     // Lấy tất cả MeasureData
     public List<MeasureData> getAllMeasureData() {
         return measureDataRepository.findAll();
