@@ -59,11 +59,14 @@ public class FeedingScheduleService {
     public Optional<FeedingSchedule> updateFeedingScheduleById(UUID id, FeedingSchedule feedingScheduleDetails) {
         return feedingScheduleRepository.findById(id).map(existingFeedingSchedule -> {
             existingFeedingSchedule.setKoiId(feedingScheduleDetails.getKoiId());
-            existingFeedingSchedule.setFedding(feedingScheduleDetails.getFedding());
+            existingFeedingSchedule.setFeedAt(feedingScheduleDetails.getFeedAt()); // Thay đổi từ fedding thành feedAt
             existingFeedingSchedule.setFoodAmount(feedingScheduleDetails.getFoodAmount());
+            existingFeedingSchedule.setFoodType(feedingScheduleDetails.getFoodType()); // Thêm xử lý cho foodType
+            existingFeedingSchedule.setNote(feedingScheduleDetails.getNote()); // Thêm xử lý cho note
             return feedingScheduleRepository.save(existingFeedingSchedule);
         });
     }
+
 
     // Xóa FeedingSchedule theo ID
     public void deleteFeedingScheduleById(UUID id) {

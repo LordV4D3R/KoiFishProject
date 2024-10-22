@@ -38,6 +38,7 @@ public class Koi {
     private String imgUrl;
     private String origin;
     private String breed;
+    private int length; // Thêm field mới
 
     public enum Status {
         ACTIVE,
@@ -50,4 +51,3 @@ public class Koi {
         NOT_SPECIFIED
     }
 }
-

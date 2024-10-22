@@ -69,6 +69,7 @@ public class KoiService {
             existingKoi.setBreed(koiDetails.getBreed());
             existingKoi.setKoiRecords(koiDetails.getKoiRecords());
             existingKoi.setFeedingSchedules(koiDetails.getFeedingSchedules());
+            existingKoi.setLength(koiDetails.getLength()); // Thêm dòng này để cập nhật length
             return koiRepository.save(existingKoi);
         });
     }

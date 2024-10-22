@@ -20,8 +20,8 @@ public class FeedingSchedule {
     //ManyToOne
     private UUID koiId;
 
-    private LocalDateTime fedding;
+    private LocalDateTime feedAt; // Thay thế field fedding
     private double foodAmount;
-
-
+    private String foodType; // Thêm field mới foodType
+    private String note; // Thêm field mới note
 }
