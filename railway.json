@@ -1,0 +1,9 @@
+{
+  "name": "KoiFishProject",
+  "build": {
+    "command": "mvn clean install"
+  },
+  "start": {
+    "command": "java -jar target/KoiFishProject-0.0.1-SNAPSHOT.jar"
+  }
+}
