@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,11 +17,16 @@ public class FeedingSchedule {
     @Id
     private UUID id;
 
-    //ManyToOne
+    // ManyToOne
     private UUID koiId;
 
-    private LocalDateTime feedAt; // Thay thế field fedding
+    // Updated field to store multiple feeding times as strings
+    private List<String> feedAt;
+
     private double foodAmount;
-    private String foodType; // Thêm field mới foodType
-    private String note; // Thêm field mới note
+    private String foodType;
+    private String note;
+
+    // New field for CheckFeed references
+    private List<UUID> checkFeedID;
 }

@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/orders/updateStatus/**").authenticated()
                 .requestMatchers("/api/order-details/**").authenticated()
                 .requestMatchers("/api/products/**").authenticated()
+                .requestMatchers("/api/check-feeds/**").authenticated()
                 .anyRequest().authenticated()  // Các yêu cầu khác cần xác thực
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // Sử dụng JWT, không cần session

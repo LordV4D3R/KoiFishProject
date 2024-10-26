@@ -15,7 +15,7 @@ public class FeedingScheduleController {
     @Autowired
     private FeedingScheduleService feedingScheduleService;
 
-    // Lấy tất cả FeedingSchedule
+    // Get all FeedingSchedules
     @GetMapping
     public ResponseEntity<?> getAllFeedingSchedules() {
         try {
@@ -30,7 +30,7 @@ public class FeedingScheduleController {
         }
     }
 
-    // Lấy FeedingSchedule theo ID
+    // Get FeedingSchedule by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getFeedingScheduleById(@PathVariable UUID id) {
         try {
@@ -50,7 +50,7 @@ public class FeedingScheduleController {
         }
     }
 
-    // Thêm mới FeedingSchedule
+    // Add new FeedingSchedule
     @PostMapping
     public ResponseEntity<?> addFeedingSchedule(@RequestBody FeedingSchedule feedingSchedule) {
         try {
@@ -65,7 +65,7 @@ public class FeedingScheduleController {
         }
     }
 
-    // Cập nhật FeedingSchedule theo ID
+    // Update FeedingSchedule by ID
     @PutMapping("/{id}")
     public ResponseEntity<?> updateFeedingScheduleById(@PathVariable UUID id, @RequestBody FeedingSchedule feedingSchedule) {
         try {
@@ -85,7 +85,7 @@ public class FeedingScheduleController {
         }
     }
 
-    // Xóa FeedingSchedule theo ID
+    // Delete FeedingSchedule by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFeedingScheduleById(@PathVariable UUID id) {
         try {

@@ -20,56 +20,49 @@ public class FeedingScheduleService {
     @Autowired
     private KoiRepository koiRepository;
 
-    // Lấy tất cả FeedingSchedule
+    // Get all FeedingSchedules
     public List<FeedingSchedule> getAllFeedingSchedules() {
         return feedingScheduleRepository.findAll();
     }
 
-    // Lấy FeedingSchedule theo ID
+    // Get FeedingSchedule by ID
     public Optional<FeedingSchedule> getFeedingScheduleById(UUID id) {
         return feedingScheduleRepository.findById(id);
     }
 
-    // Thêm mới FeedingSchedule
+    // Add new FeedingSchedule
     public FeedingSchedule addFeedingSchedule(FeedingSchedule feedingSchedule) {
-        // Generate UUID nếu chưa có
         if (feedingSchedule.getId() == null) {
             feedingSchedule.setId(UUID.randomUUID());
         }
-
-        // Lưu FeedingSchedule
         FeedingSchedule savedFeedingSchedule = feedingScheduleRepository.save(feedingSchedule);
 
-        // Tìm Koi bằng koiId từ FeedingSchedule
+        // Update Koi's feedingSchedules list
         Optional<Koi> koiOptional = koiRepository.findById(feedingSchedule.getKoiId());
         if (koiOptional.isPresent()) {
             Koi koi = koiOptional.get();
-
-            // Thêm ID của FeedingSchedule vào danh sách feedingSchedules của Koi
             koi.getFeedingSchedules().add(savedFeedingSchedule.getId());
-
-            // Lưu lại Koi sau khi cập nhật
             koiRepository.save(koi);
         }
-
         return savedFeedingSchedule;
     }
 
-    // Cập nhật FeedingSchedule theo ID
+    // Update FeedingSchedule by ID
     public Optional<FeedingSchedule> updateFeedingScheduleById(UUID id, FeedingSchedule feedingScheduleDetails) {
         return feedingScheduleRepository.findById(id).map(existingFeedingSchedule -> {
             existingFeedingSchedule.setKoiId(feedingScheduleDetails.getKoiId());
-            existingFeedingSchedule.setFeedAt(feedingScheduleDetails.getFeedAt()); // Thay đổi từ fedding thành feedAt
+            existingFeedingSchedule.setFeedAt(feedingScheduleDetails.getFeedAt());
             existingFeedingSchedule.setFoodAmount(feedingScheduleDetails.getFoodAmount());
-            existingFeedingSchedule.setFoodType(feedingScheduleDetails.getFoodType()); // Thêm xử lý cho foodType
-            existingFeedingSchedule.setNote(feedingScheduleDetails.getNote()); // Thêm xử lý cho note
+            existingFeedingSchedule.setFoodType(feedingScheduleDetails.getFoodType());
+            existingFeedingSchedule.setNote(feedingScheduleDetails.getNote());
+            existingFeedingSchedule.setCheckFeedID(feedingScheduleDetails.getCheckFeedID());
             return feedingScheduleRepository.save(existingFeedingSchedule);
         });
     }
 
-
-    // Xóa FeedingSchedule theo ID
+    // Delete FeedingSchedule by ID
     public void deleteFeedingScheduleById(UUID id) {
         feedingScheduleRepository.deleteById(id);
     }
 }
+
