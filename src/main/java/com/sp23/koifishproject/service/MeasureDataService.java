@@ -39,7 +39,7 @@ public class MeasureDataService {
 
         MeasureData savedMeasureData = measureDataRepository.save(measureData);
 
-        // Cập nhật Unit để gán measureData
+        // Cập nhật Unit để gán measureData cho các unitIds
         for (UUID unitId : measureData.getUnitIds()) {
             unitRepository.findById(unitId).ifPresent(unit -> {
                 unit.setMeasureData(savedMeasureData.getId());
@@ -56,12 +56,30 @@ public class MeasureDataService {
             existingMeasureData.setMeasurementId(measureDataDetails.getMeasurementId());
             existingMeasureData.setUnitIds(measureDataDetails.getUnitIds());
             existingMeasureData.setVolume(measureDataDetails.getVolume());
+
+            // Cập nhật các Unit liên quan
+            for (UUID unitId : measureDataDetails.getUnitIds()) {
+                unitRepository.findById(unitId).ifPresent(unit -> {
+                    unit.setMeasureData(existingMeasureData.getId());
+                    unitRepository.save(unit);
+                });
+            }
+
             return measureDataRepository.save(existingMeasureData);
         });
     }
 
     // Xóa MeasureData theo ID
     public void deleteMeasureDataById(UUID id) {
-        measureDataRepository.deleteById(id);
+        measureDataRepository.findById(id).ifPresent(measureData -> {
+            // Xóa quan hệ với Unit trước khi xóa MeasureData
+            for (UUID unitId : measureData.getUnitIds()) {
+                unitRepository.findById(unitId).ifPresent(unit -> {
+                    unit.setMeasureData(null);
+                    unitRepository.save(unit);
+                });
+            }
+            measureDataRepository.deleteById(id);
+        });
     }
 }
