@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -18,9 +16,8 @@ public class Unit {
     @Id
     private UUID id;
 
-    //OneToMany
-    private List<UUID> measureData = new ArrayList<>();
-
+    // Many-to-One relationship
+    private UUID measureData;
 
     private String unitName;
     private String unitFullName;
@@ -28,6 +25,4 @@ public class Unit {
     private String info;
     private double minValue;
     private double maxValue;
-
-
 }

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,14 +15,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @Document(collection = "measure_data")
 public class MeasureData {
-    @org.springframework.data.annotation.Id
+    @Id
     private UUID id;
 
-    //ManyToOne
+    // Many-to-One relationship
     private UUID measurementId;
 
-    //ManyToOne
-    private UUID unitId;
+    // One-to-Many relationship
+    private List<UUID> unitIds= new ArrayList<>();
 
     private double volume;
 }

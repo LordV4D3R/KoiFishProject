@@ -1,10 +1,8 @@
 package com.sp23.koifishproject.service;
 
 import com.sp23.koifishproject.model.MeasureData;
-import com.sp23.koifishproject.model.Measurement;
 import com.sp23.koifishproject.model.Unit;
 import com.sp23.koifishproject.repository.mongo.MeasureDataRepository;
-import com.sp23.koifishproject.repository.mongo.MeasurementRepository;
 import com.sp23.koifishproject.repository.mongo.UnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +16,7 @@ public class MeasureDataService {
 
     @Autowired
     private MeasureDataRepository measureDataRepository;
-    @Autowired
-    private MeasurementRepository measurementRepository;
+
     @Autowired
     private UnitRepository unitRepository;
 
@@ -40,31 +37,14 @@ public class MeasureDataService {
             measureData.setId(UUID.randomUUID());
         }
 
-        // Lưu measureData
         MeasureData savedMeasureData = measureDataRepository.save(measureData);
 
-        // Tìm Measurement theo ID từ MeasureData
-        Optional<Measurement> measurementOptional = measurementRepository.findById(measureData.getMeasurementId());
-        if (measurementOptional.isPresent()) {
-            Measurement measurement = measurementOptional.get();
-
-            // Thêm ID của MeasureData vào danh sách measureData của Measurement
-            measurement.getMeasureData().add(savedMeasureData.getId());
-
-            // Lưu Measurement sau khi cập nhật
-            measurementRepository.save(measurement);
-        }
-
-        // Tìm Unit theo ID từ MeasureData
-        Optional<Unit> unitOptional = unitRepository.findById(measureData.getUnitId());
-        if (unitOptional.isPresent()) {
-            Unit unit = unitOptional.get();
-
-            // Thêm ID của MeasureData vào danh sách measureData của Unit
-            unit.getMeasureData().add(savedMeasureData.getId());
-
-            // Lưu Unit sau khi cập nhật
-            unitRepository.save(unit);
+        // Cập nhật Unit để gán measureData
+        for (UUID unitId : measureData.getUnitIds()) {
+            unitRepository.findById(unitId).ifPresent(unit -> {
+                unit.setMeasureData(savedMeasureData.getId());
+                unitRepository.save(unit);
+            });
         }
 
         return savedMeasureData;
@@ -74,7 +54,7 @@ public class MeasureDataService {
     public Optional<MeasureData> updateMeasureDataById(UUID id, MeasureData measureDataDetails) {
         return measureDataRepository.findById(id).map(existingMeasureData -> {
             existingMeasureData.setMeasurementId(measureDataDetails.getMeasurementId());
-            existingMeasureData.setUnitId(measureDataDetails.getUnitId());
+            existingMeasureData.setUnitIds(measureDataDetails.getUnitIds());
             existingMeasureData.setVolume(measureDataDetails.getVolume());
             return measureDataRepository.save(existingMeasureData);
         });

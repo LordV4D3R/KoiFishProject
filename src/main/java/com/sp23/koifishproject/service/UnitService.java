@@ -1,7 +1,9 @@
 package com.sp23.koifishproject.service;
 
 import com.sp23.koifishproject.model.Unit;
+import com.sp23.koifishproject.model.MeasureData;
 import com.sp23.koifishproject.repository.mongo.UnitRepository;
+import com.sp23.koifishproject.repository.mongo.MeasureDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ public class UnitService {
 
     @Autowired
     private UnitRepository unitRepository;
+
+    @Autowired
+    private MeasureDataRepository measureDataRepository;
 
     // Lấy tất cả các đơn vị (Unit)
     public List<Unit> getAllUnits() {
@@ -31,7 +36,18 @@ public class UnitService {
         if (unit.getId() == null) {
             unit.setId(UUID.randomUUID());
         }
-        return unitRepository.save(unit);
+
+        Unit savedUnit = unitRepository.save(unit);
+
+        // Tự động thêm Unit vào MeasureData tương ứng
+        if (unit.getMeasureData() != null) {
+            measureDataRepository.findById(unit.getMeasureData()).ifPresent(measureData -> {
+                measureData.getUnitIds().add(savedUnit.getId());
+                measureDataRepository.save(measureData);
+            });
+        }
+
+        return savedUnit;
     }
 
     // Cập nhật Unit theo ID
