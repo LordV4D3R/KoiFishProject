@@ -38,6 +38,7 @@ public class ProductService {
             existingProduct.setProductPrice(productDetails.getProductPrice());
             existingProduct.setQuantity(productDetails.getQuantity());
             existingProduct.setStatus(productDetails.getStatus());
+            existingProduct.setImage(productDetails.getImage()); // Cập nhật trường image
             return productRepository.save(existingProduct);
         });
     }

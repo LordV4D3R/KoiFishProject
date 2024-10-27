@@ -15,9 +15,9 @@ import java.util.UUID;
 public class Product {
     @Id
     private UUID id;
-
     private String productName;
     private double productPrice;
     private int quantity;
     private String status;
+    private String image; // Thêm trường mới cho URL hoặc dữ liệu của hình ảnh
 }

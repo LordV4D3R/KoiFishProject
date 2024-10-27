@@ -62,22 +62,21 @@ public class UnitService {
             existingUnit.setMinValue(unitDetails.getMinValue());
             existingUnit.setMaxValue(unitDetails.getMaxValue());
             existingUnit.setMeasureData(unitDetails.getMeasureData());
+
+            // Nếu measureData thay đổi, cập nhật trong MeasureData
+            if (unitDetails.getMeasureData() != null && !unitDetails.getMeasureData().equals(existingUnit.getMeasureData())) {
+                measureDataRepository.findById(unitDetails.getMeasureData()).ifPresent(newMeasureData -> {
+                    newMeasureData.getUnitIds().add(existingUnit.getId());
+                    measureDataRepository.save(newMeasureData);
+                });
+            }
+
             return unitRepository.save(existingUnit);
         });
     }
 
     // Xóa Unit theo ID
     public void deleteUnitById(UUID id) {
-        // Xóa Unit khỏi MeasureData trước khi xóa Unit
-        unitRepository.findById(id).ifPresent(unit -> {
-            if (unit.getMeasureData() != null) {
-                measureDataRepository.findById(unit.getMeasureData()).ifPresent(measureData -> {
-                    measureData.getUnitIds().remove(id);
-                    measureDataRepository.save(measureData);
-                });
-            }
-        });
-
         unitRepository.deleteById(id);
     }
 }

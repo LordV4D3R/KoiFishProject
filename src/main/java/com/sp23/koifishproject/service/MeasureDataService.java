@@ -39,12 +39,14 @@ public class MeasureDataService {
 
         MeasureData savedMeasureData = measureDataRepository.save(measureData);
 
-        // Cập nhật Unit để gán measureData cho các unitIds
-        for (UUID unitId : measureData.getUnitIds()) {
-            unitRepository.findById(unitId).ifPresent(unit -> {
-                unit.setMeasureData(savedMeasureData.getId());
-                unitRepository.save(unit);
-            });
+        // Cập nhật Unit để gán measureData
+        if (measureData.getUnitIds() != null) {
+            for (UUID unitId : measureData.getUnitIds()) {
+                unitRepository.findById(unitId).ifPresent(unit -> {
+                    unit.setMeasureData(savedMeasureData.getId());
+                    unitRepository.save(unit);
+                });
+            }
         }
 
         return savedMeasureData;
@@ -57,12 +59,14 @@ public class MeasureDataService {
             existingMeasureData.setUnitIds(measureDataDetails.getUnitIds());
             existingMeasureData.setVolume(measureDataDetails.getVolume());
 
-            // Cập nhật các Unit liên quan
-            for (UUID unitId : measureDataDetails.getUnitIds()) {
-                unitRepository.findById(unitId).ifPresent(unit -> {
-                    unit.setMeasureData(existingMeasureData.getId());
-                    unitRepository.save(unit);
-                });
+            // Gán MeasureData mới cho các Unit
+            if (measureDataDetails.getUnitIds() != null) {
+                for (UUID unitId : measureDataDetails.getUnitIds()) {
+                    unitRepository.findById(unitId).ifPresent(unit -> {
+                        unit.setMeasureData(existingMeasureData.getId());
+                        unitRepository.save(unit);
+                    });
+                }
             }
 
             return measureDataRepository.save(existingMeasureData);
@@ -71,15 +75,6 @@ public class MeasureDataService {
 
     // Xóa MeasureData theo ID
     public void deleteMeasureDataById(UUID id) {
-        measureDataRepository.findById(id).ifPresent(measureData -> {
-            // Xóa quan hệ với Unit trước khi xóa MeasureData
-            for (UUID unitId : measureData.getUnitIds()) {
-                unitRepository.findById(unitId).ifPresent(unit -> {
-                    unit.setMeasureData(null);
-                    unitRepository.save(unit);
-                });
-            }
-            measureDataRepository.deleteById(id);
-        });
+        measureDataRepository.deleteById(id);
     }
 }
