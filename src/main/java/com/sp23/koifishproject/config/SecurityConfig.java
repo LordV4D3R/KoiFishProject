@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/users/**").permitAll()  // Không yêu cầu xác thực cho tất cả API của user
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/api/users/**").permitAll()  // Không yêu cầu xác thực cho tất cả API của user
                 .requestMatchers("/api/ponds/**").authenticated()
                 .requestMatchers("/api/measurements/**").authenticated()
                 .requestMatchers("/api/measure-data/**").authenticated()

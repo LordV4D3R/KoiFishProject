@@ -1,11 +1,17 @@
 package com.sp23.koifishproject.controller;
 
+import com.sp23.koifishproject.constant.common.BusinessResult;
 import com.sp23.koifishproject.model.Pond;
 import com.sp23.koifishproject.service.PondService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.*;
 
 @RestController
@@ -27,6 +33,21 @@ public class PondController {
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(Collections.singletonMap("error", "Failed to retrieve ponds: " + e.getMessage()));
+        }
+    }
+
+    // Lấy tất cả các pond theo tên
+    @GetMapping("/search")
+    public ResponseEntity<?> getAllPonds(@RequestParam(required = false) String pondName) {
+        try {
+            BusinessResult<List<Pond>> ponds = pondService.getAllPonds(pondName);
+            if (ponds.getStatusCode() > 0) {
+                return ResponseEntity.ok(ponds.getData());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ponds.getMessage());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

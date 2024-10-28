@@ -1,5 +1,7 @@
 package com.sp23.koifishproject.service;
 
+import com.sp23.koifishproject.constant.common.AppConstants;
+import com.sp23.koifishproject.constant.common.BusinessResult;
 import com.sp23.koifishproject.model.Pond;
 import com.sp23.koifishproject.repository.mongo.PondRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,22 @@ public class PondService {
     // Lấy tất cả các pond
     public List<Pond> getAllPonds() {
         return pondRepository.findAll();
+    }
+
+    // Get All Pond
+    public BusinessResult<List<Pond>> getAllPonds(String pondName) {
+        try {
+            List<Pond> ponds;
+            if (pondName != null && !pondName.isEmpty()) {
+                ponds = pondRepository.findPondByPondNameContaining(pondName).get();
+            } else {
+                ponds = pondRepository.findAll();
+            }
+            if (ponds.isEmpty()) return new BusinessResult<>(AppConstants.FAIL_GET_CODE, AppConstants.FAIL_GET_MESSAGE, ponds);
+            return new BusinessResult<>(AppConstants.SUCCESS_GET_CODE, AppConstants.SUCCESS_GET_MESSAGE, ponds);
+        } catch (Exception e) {
+            return new BusinessResult<>(AppConstants.WARNING_CODE, AppConstants.WARNING_MESSAGE + e.getMessage());
+        }
     }
 
     // Lấy pond theo id

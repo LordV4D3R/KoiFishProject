@@ -5,9 +5,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository("pondRepository")
 @Qualifier("pondRepository")
 public interface PondRepository extends MongoRepository<Pond, UUID> {
+    Optional<List<Pond>> findPondByPondNameContaining(String pondName);
 }
