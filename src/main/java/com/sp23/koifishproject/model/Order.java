@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,9 @@ public class Order {
 
     private double totalPrice;
 
+    // Thêm hai trường mới
+    private LocalDateTime dateCreate;
+    private LocalDateTime dateProcess;
     // Thêm thuộc tính trạng thái
     private Status status;
 

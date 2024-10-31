@@ -11,6 +11,7 @@ import com.sp23.koifishproject.repository.mongo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,8 +25,10 @@ public class OrderService {
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -43,6 +46,7 @@ public class OrderService {
     public Order createOrder(Order order) {
         // Tạo UUID cho order nếu chưa có
         order.setId(UUID.randomUUID());
+        order.setDateCreate(LocalDateTime.now()); // Thiết lập dateCreate với thời gian hiện tại
 
         // Nạp đầy đủ thông tin chi tiết từ các OrderDetail
         List<OrderDetail> populatedOrderDetails = order.getOrderDetails().stream()
@@ -60,15 +64,13 @@ public class OrderService {
 
         // Tìm User bằng idUser từ Order
         Optional<User> userOptional = userRepository.findById(order.getIdUser());
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
+        userOptional.ifPresent(user -> {
             // Thêm ID của Order vào danh sách orders của User
             user.getOrders().add(savedOrder);
 
             // Lưu User sau khi cập nhật
             userRepository.save(user);
-        }
+        });
 
         return savedOrder;
     }
@@ -99,7 +101,7 @@ public class OrderService {
         });
     }
 
-    // Cập nhật trạng thái đơn hàng
+    // Cập nhật trạng thái đơn hàng và thiết lập dateProcess khi trạng thái thay đổi
     public Optional<Order> updateOrderStatus(UUID id, Order.Status status) {
         return orderRepository.findById(id).map(existingOrder -> {
 
@@ -118,8 +120,10 @@ public class OrderService {
                 }
             }
 
-            // Cập nhật trạng thái của đơn hàng
+            // Cập nhật trạng thái và thiết lập dateProcess với thời gian hiện tại
             existingOrder.setStatus(status);
+            existingOrder.setDateProcess(LocalDateTime.now());
+
             return orderRepository.save(existingOrder);
         });
     }
