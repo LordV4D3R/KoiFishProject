@@ -6,10 +6,12 @@ import com.sp23.koifishproject.repository.mongo.KoiRepository;
 import com.sp23.koifishproject.repository.mongo.PondRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class KoiService {
@@ -77,5 +79,20 @@ public class KoiService {
     // Xóa Koi theo ID
     public void deleteKoiById(UUID id) {
         koiRepository.deleteById(id);
+    }
+
+    public List<Koi> getActiveKois(String name) {
+        List<Koi> activeKois = koiRepository.findAll().stream()
+                .filter(koi -> koi.getStatus() == Koi.Status.ACTIVE)
+                .collect(Collectors.toList());
+
+        // Nếu có tham số name, lọc các koi có name gần giống
+        if (StringUtils.hasText(name)) {
+            activeKois = activeKois.stream()
+                    .filter(koi -> koi.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return activeKois;
     }
 }

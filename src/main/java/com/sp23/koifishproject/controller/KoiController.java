@@ -103,4 +103,19 @@ public class KoiController {
                     .body(Collections.singletonMap("error", "Failed to delete koi: " + e.getMessage()));
         }
     }
+
+    // Lấy tất cả Koi ACTIVE, có thể tìm kiếm theo tên
+    @GetMapping("/active")
+    public ResponseEntity<?> getActiveKois(@RequestParam(required = false) String name) {
+        try {
+            List<Koi> activeKois = koiService.getActiveKois(name);
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", activeKois);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Collections.singletonMap("error", "Failed to retrieve active kois: " + e.getMessage()));
+        }
+    }
 }
